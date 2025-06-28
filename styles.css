@@ -6,8 +6,7 @@
 
 body {
     font-family: 'Noto Serif TC', serif;
-    background: linear-gradient(135deg, #ffeef8 0%, #f0e6ff 50%, #e6f7ff 100%);
-    min-height: 100vh;
+    background: linear-gradient(135deg, #faf8f5 0%, #f5f1eb 50%, #f0ebe5 100%);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -17,6 +16,8 @@ body {
 .container {
     position: relative;
     width: 85vw;
+    height: 100vh;
+    margin-top: 15vh;
 }
 
 /* 請帖卡片樣式 */
@@ -38,12 +39,13 @@ body {
     position: relative;
     width: 100%;
     height: 350px;
-    background: linear-gradient(145deg, #f9f7f4, #f1ede8);
+    background: linear-gradient(145deg, #faf8f5, #f5f1eb);
     border-radius: 15px;
     box-shadow: 
         0 20px 40px rgba(0,0,0,0.1),
         0 0 0 1px rgba(255,255,255,0.5) inset;
     overflow: hidden;
+    margin-top: 23vh;
 }
 
 .envelope-top {
@@ -120,8 +122,6 @@ body {
     background: #faf8f5;
     border-radius: 15px;
     box-shadow: 0 20px 40px rgba(0,0,0,0.15);
-    max-height: 80vh;
-    overflow-y: auto;
     transition: all 0.3s ease;
 }
 
@@ -181,7 +181,7 @@ body {
 .detail-section {
     margin: 20px 0;
     padding: 15px;
-    background: rgba(255, 255, 255, 0.6);
+    background: rgba(250, 248, 245, 0.8);
     border-radius: 10px;
     border-left: 4px solid #d4af8c;
 }
@@ -201,7 +201,7 @@ body {
 .rsvp-section {
     margin: 30px 0;
     padding: 20px;
-    background: linear-gradient(135deg, rgba(212, 175, 140, 0.1), rgba(212, 175, 140, 0.05));
+    background: linear-gradient(135deg, rgba(250, 248, 245, 0.9), rgba(245, 241, 235, 0.8));
     border-radius: 15px;
     text-align: center;
 }
@@ -329,4 +329,72 @@ body {
 
 .invitation-details::-webkit-scrollbar-thumb:hover {
     background: rgba(212, 175, 140, 0.7);
+}
+
+/* Lightbox 樣式 */
+.lightbox {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0,0,0,0.8);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2000;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    padding: 20px;
+}
+
+.lightbox-content {
+    position: relative;
+    max-width: 800px;
+    max-height: 600px;
+}
+
+.lightbox img {
+    max-width: 800px;
+    max-height: 600px;
+    width: auto;
+    height: auto;
+    border-radius: 10px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+}
+
+.lightbox-close {
+    position: absolute;
+    top: -10px;
+    right: -10px;
+    background: white;
+    border: none;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    font-size: 20px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+    transition: all 0.2s ease;
+}
+
+.lightbox-close:hover {
+    background: #f5f5f5;
+    transform: scale(1.1);
+}
+
+/* 響應式 lightbox */
+@media (max-width: 768px) {
+    .lightbox-content {
+        max-width: 90vw;
+        max-height: 80vh;
+    }
+    
+    .lightbox img {
+        max-width: 90vw;
+        max-height: 80vh;
+    }
 } 

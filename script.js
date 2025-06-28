@@ -195,52 +195,6 @@ function openLightbox(src, alt) {
         </div>
     `;
     
-    lightbox.style.cssText = `
-        position: fixed;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background: rgba(0,0,0,0.8);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        z-index: 2000;
-        opacity: 0;
-        transition: opacity 0.3s ease;
-        padding: 20px;
-    `;
-    
-    lightbox.querySelector('.lightbox-content').style.cssText = `
-        position: relative;
-        max-width: 90%;
-        max-height: 90%;
-    `;
-    
-    lightbox.querySelector('img').style.cssText = `
-        max-width: 100%;
-        max-height: 100%;
-        border-radius: 10px;
-        box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-    `;
-    
-    lightbox.querySelector('.lightbox-close').style.cssText = `
-        position: absolute;
-        top: -10px;
-        right: -10px;
-        background: white;
-        border: none;
-        width: 40px;
-        height: 40px;
-        border-radius: 50%;
-        font-size: 20px;
-        cursor: pointer;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        box-shadow: 0 2px 10px rgba(0,0,0,0.3);
-    `;
-    
     document.body.appendChild(lightbox);
     
     // 點擊背景關閉
