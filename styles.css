@@ -83,13 +83,13 @@ body {
 }
 
 .flourish-top, .flourish-bottom {
-    font-size: 24px;
+    font-size: 30px;
     color: #d4af8c;
     margin: 10px 0;
 }
 
 .names {
-    font-size: 28px;
+    font-size: 36px;
     font-weight: 500;
     margin: 20px 0;
     color: #5a4037;
@@ -97,14 +97,14 @@ body {
 }
 
 .invitation-text {
-    font-size: 16px;
+    font-size: 20px;
     margin: 15px 0;
     line-height: 1.6;
     color: #8b7355;
 }
 
 .click-hint {
-    font-size: 14px;
+    font-size: 18px;
     color: #b8860b;
     margin-top: 20px;
     animation: pulse 2s infinite;
@@ -141,7 +141,7 @@ body {
     left: 20px;
     background: none;
     border: none;
-    font-size: 16px;
+    font-size: 20px;
     color: #8b7355;
     cursor: pointer;
     padding: 8px;
@@ -161,14 +161,14 @@ body {
 }
 
 .couple-names {
-    font-size: 32px;
+    font-size: 40px;
     color: #5a4037;
     margin-bottom: 10px;
     font-weight: 500;
 }
 
 .wedding-subtitle {
-    font-size: 18px;
+    font-size: 22px;
     color: #8b7355;
     font-weight: 300;
 }
@@ -189,13 +189,14 @@ body {
 }
 
 .detail-section h3 {
-    font-size: 18px;
+    font-size: 30px;
     color: #5a4037;
     margin-bottom: 8px;
     font-weight: 500;
 }
 
 .detail-section p {
+    font-size: 22px;
     color: #6b4e3d;
     line-height: 1.6;
 }
@@ -203,19 +204,14 @@ body {
 .rsvp-section {
     margin: 30px 0;
     padding: 25px;
-    background: linear-gradient(135deg, rgba(250, 248, 245, 0.95), rgba(245, 241, 235, 0.9));
     border-radius: 15px;
     text-align: center;
-    border: 1px solid rgba(212, 175, 140, 0.2);
-    box-shadow: 
-        0 10px 25px rgba(0,0,0,0.08),
-        0 0 0 1px rgba(255,255,255,0.3) inset;
 }
 
 .rsvp-section h3 {
     color: #5a4037;
     margin-bottom: 12px;
-    font-size: 20px;
+    font-size: 24px;
     font-weight: 500;
     letter-spacing: 1px;
 }
@@ -223,7 +219,7 @@ body {
 .rsvp-section p {
     color: #8b7355;
     margin-bottom: 15px;
-    font-size: 16px;
+    font-size: 20px;
     line-height: 1.6;
 }
 
@@ -238,7 +234,7 @@ body {
     padding: 12px 25px;
     border: none;
     border-radius: 25px;
-    font-size: 16px;
+    font-size: 20px;
     cursor: pointer;
     transition: all 0.3s ease;
     font-family: 'Noto Serif TC', serif;
@@ -290,7 +286,7 @@ body {
 }
 
 .form-group label {
-    font-size: 15px;
+    font-size: 18px;
     font-weight: 500;
     color: #5a4037;
     margin-bottom: 6px;
@@ -303,7 +299,7 @@ body {
     padding: 14px 16px;
     border: 2px solid rgba(212, 175, 140, 0.3);
     border-radius: 12px;
-    font-size: 16px;
+    font-size: 18px;
     font-family: 'Noto Serif TC', serif;
     background: linear-gradient(135deg, rgba(250, 248, 245, 0.9), rgba(255, 255, 255, 0.8));
     transition: all 0.3s ease;
@@ -360,7 +356,7 @@ body {
     color: white;
     border: none;
     padding: 16px 40px;
-    font-size: 18px;
+    font-size: 22px;
     font-weight: 500;
     border-radius: 25px;
     cursor: pointer;
@@ -442,11 +438,11 @@ body {
     }
     
     .names {
-        font-size: 24px;
+        font-size: 30px;
     }
     
     .couple-names {
-        font-size: 28px;
+        font-size: 36px;
     }
     
     .event-details {
@@ -490,7 +486,7 @@ body {
     .form-group select,
     .form-group textarea {
         padding: 12px 14px;
-        font-size: 16px;
+        font-size: 18px;
     }
     
     .form-submit {
@@ -502,7 +498,7 @@ body {
         width: 100%;
         max-width: 320px;
         padding: 14px 30px;
-        font-size: 17px;
+        font-size: 20px;
     }
 }
 
@@ -566,7 +562,7 @@ body {
     width: 40px;
     height: 40px;
     border-radius: 50%;
-    font-size: 20px;
+    font-size: 24px;
     cursor: pointer;
     display: flex;
     align-items: center;
