@@ -15,6 +15,9 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // 為照片添加點擊放大功能
     initPhotoGallery();
+    
+    // 初始化 RSVP 表單
+    initRSVPForm();
 });
 
 // 顯示詳細資訊
@@ -56,18 +59,62 @@ function showCard() {
     }, 300);
 }
 
-// RSVP 功能
-function rsvp(response) {
-    const message = response === 'attend' ? 
-        '感謝您的參與！我們期待在婚禮上見到您 ❤️' : 
-        '謝謝您的回覆，我們理解您無法參加 💝';
+// 初始化 RSVP 表單
+function initRSVPForm() {
+    const form = document.getElementById('rsvp-form');
+    if (!form) return;
     
-    // 創建提示訊息
-    showNotification(message, response === 'attend' ? 'success' : 'info');
+    form.addEventListener('submit', handleRSVPSubmit);
     
-    // 這裡可以添加實際的 RSVP 處理邏輯
-    // 例如發送到後端 API
-    console.log(`RSVP Response: ${response}`);
+    // 監聽出席狀況變化
+    const attendanceSelect = document.getElementById('attendance');
+    const guestCountGroup = document.querySelector('input[name="guestCount"]').parentElement;
+    
+    attendanceSelect.addEventListener('change', function() {
+        if (this.value === 'decline') {
+            guestCountGroup.style.opacity = '0.5';
+            guestCountGroup.querySelector('input').disabled = true;
+        } else {
+            guestCountGroup.style.opacity = '1';
+            guestCountGroup.querySelector('input').disabled = false;
+        }
+    });
+}
+
+// 處理 RSVP 表單提交
+function handleRSVPSubmit(event) {
+    event.preventDefault();
+    
+    const formData = new FormData(event.target);
+    const data = Object.fromEntries(formData.entries());
+    
+    // 驗證必填欄位
+    if (!data.guestName || !data.guestPhone || !data.attendance) {
+        showNotification('請填寫所有必填欄位', 'error');
+        return;
+    }
+    
+    // 處理表單數據
+    const rsvpData = {
+        name: data.guestName,
+        phone: data.guestPhone,
+        attendance: data.attendance,
+        guestCount: data.attendance === 'attend' ? parseInt(data.guestCount) || 1 : 0,
+        blessing: data.blessing || ''
+    };
+    
+    // 這裡可以發送到後端 API
+    console.log('RSVP Data:', rsvpData);
+    
+    // 顯示成功訊息
+    const message = rsvpData.attendance === 'attend' 
+        ? `感謝 ${rsvpData.name} 的回覆！我們期待在婚禮上見到您${rsvpData.guestCount > 1 ? `和您的 ${rsvpData.guestCount - 1} 位同行者` : ''} ❤️`
+        : `謝謝 ${rsvpData.name} 的回覆，我們理解您無法參加 💝`;
+    
+    showNotification(message, rsvpData.attendance === 'attend' ? 'success' : 'info');
+    
+    // 重置表單（可選）
+    // event.target.reset();
 }
 
 // 顯示通知
@@ -89,12 +136,19 @@ function showNotification(message, type = 'info') {
     `;
     
     // 添加樣式
+    let backgroundColor;
+    switch(type) {
+        case 'success': backgroundColor = '#4caf50'; break;
+        case 'error': backgroundColor = '#f44336'; break;
+        default: backgroundColor = '#2196f3'; break;
+    }
+    
     notification.style.cssText = `
         position: fixed;
         top: 20px;
         left: 50%;
         transform: translateX(-50%);
-        background: ${type === 'success' ? '#4caf50' : '#2196f3'};
+        background: ${backgroundColor};
         color: white;
         padding: 15px 20px;
         border-radius: 10px;
