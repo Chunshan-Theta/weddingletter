@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>婚宴請帖</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@300;400;500;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <!-- 初始畫面 - 可點擊的請帖卡片 -->
+        <div id="invitation-card" class="invitation-card">
+            <div class="card-envelope">
+                <div class="envelope-top"></div>
+                <div class="envelope-bottom">
+                    <div class="card-content">
+                        <div class="flourish-top">❦</div>
+                        <h1 class="names">張○○ ❤ 李○○</h1>
+                        <p class="invitation-text">誠摯邀請您參加我們的婚禮</p>
+                        <div class="click-hint">點擊打開請帖</div>
+                        <div class="flourish-bottom">❦</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 詳細資訊頁面 -->
+        <div id="invitation-details" class="invitation-details hidden">
+            <div class="details-content">
+                <button class="back-btn" onclick="showCard()">← 返回</button>
+                
+                <div class="details-header">
+                    <h1 class="couple-names">張○○ & 李○○</h1>
+                    <p class="wedding-subtitle">我們要結婚了！</p>
+                </div>
+
+                <div class="event-details">
+                    <div class="detail-section">
+                        <h3>💒 婚禮日期</h3>
+                        <p>2024年12月25日 (星期三)</p>
+                    </div>
+
+                    <div class="detail-section">
+                        <h3>🕐 時間</h3>
+                        <p>下午 6:00 開始</p>
+                    </div>
+
+                    <div class="detail-section">
+                        <h3>📍 地點</h3>
+                        <p>台北君品酒店<br>
+                        台北市中山區長春路200號</p>
+                    </div>
+
+                    <div class="detail-section">
+                        <h3>💌 備註</h3>
+                        <p>請於下午 5:30 前入場<br>
+                        敬請準時參加</p>
+                    </div>
+                </div>
+
+                <div class="rsvp-section">
+                    <h3>📋 回覆出席</h3>
+                    <p>請於12月15日前回覆</p>
+                    <div class="rsvp-buttons">
+                        <button class="rsvp-btn attend" onclick="rsvp('attend')">我會參加 ✓</button>
+                        <button class="rsvp-btn decline" onclick="rsvp('decline')">無法出席 ✗</button>
+                    </div>
+                </div>
+
+                <div class="photo-gallery">
+                    <h3>💕 我們的故事</h3>
+                    <div class="gallery-grid">
+                        <img src="images/01.png" alt="回憶照片1" loading="lazy">
+                        <img src="images/02.png" alt="回憶照片2" loading="lazy">
+                        <img src="images/03.png" alt="回憶照片3" loading="lazy">
+                        <img src="images/04.png" alt="回憶照片4" loading="lazy">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html> 

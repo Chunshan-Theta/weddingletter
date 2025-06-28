@@ -1,0 +1,29 @@
+version: '3.8'
+
+services:
+  wedding-invitation:
+    image: nginx:alpine
+    container_name: wedding-invitation-web
+    ports:
+      - "3000:80"
+    volumes:
+      # Mount website files
+      - ./index.html:/usr/share/nginx/html/index.html
+      - ./styles.css:/usr/share/nginx/html/styles.css
+      - ./script.js:/usr/share/nginx/html/script.js
+      # Mount images directory
+      - ./images:/usr/share/nginx/html/images
+      # Mount custom nginx configuration
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf
+    restart: unless-stopped
+    environment:
+      - NGINX_HOST=localhost
+      - NGINX_PORT=80
+    labels:
+      - "com.wedding.description=Interactive Wedding Invitation Website"
+      - "com.wedding.version=1.0"
+    
+
+networks:
+  default:
+    name: wedding-network 
