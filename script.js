@@ -222,34 +222,103 @@ function handleKeydown(event) {
     }
 }
 
+// 全局變量存儲圖片列表
+let galleryImages = [];
+
 // 照片畫廊功能
-function initPhotoGallery() {
-    const images = document.querySelectorAll('.gallery-grid img');
+async function initPhotoGallery() {
+    const galleryGrid = document.querySelector('.gallery-grid');
+    if (!galleryGrid) return;
     
-    images.forEach(img => {
-        img.addEventListener('click', function() {
-            openLightbox(this.src, this.alt);
+    try {
+        // 獲取 images 目錄的文件列表
+        const response = await fetch('/images/');
+        const files = await response.json();
+        
+        // 過濾圖片文件
+        const imageFiles = files
+            .filter(file => file.type === 'file')
+            .filter(file => /\.(jpg|jpeg|png|gif|webp)$/i.test(file.name))
+            .sort((a, b) => a.name.localeCompare(b.name));
+        
+        // 存儲圖片信息
+        galleryImages = imageFiles.map((file, index) => ({
+            src: `images/${file.name}`,
+            alt: `回憶照片${index}`
+        }));
+        
+        // 清空現有內容
+        galleryGrid.innerHTML = '';
+        
+        // 動態創建圖片元素
+        galleryImages.forEach((imageInfo, index) => {
+            const img = document.createElement('img');
+            img.src = imageInfo.src;
+            img.alt = imageInfo.alt;
+            img.loading = 'lazy';
+            
+            // 添加點擊事件，傳入索引
+            img.addEventListener('click', function() {
+                openLightbox(index);
+            });
+            
+            // 添加錯誤處理
+            img.addEventListener('error', function() {
+                this.style.display = 'none';
+            });
+            
+            galleryGrid.appendChild(img);
         });
         
-        // 添加錯誤處理
-        img.addEventListener('error', function() {
-            this.style.display = 'none';
+    } catch (error) {
+        console.warn('無法動態載入圖片，使用靜態圖片:', error);
+        // 如果動態載入失敗，為現有圖片添加事件
+        const existingImages = document.querySelectorAll('.gallery-grid img');
+        galleryImages = Array.from(existingImages).map(img => ({
+            src: img.src,
+            alt: img.alt
+        }));
+        
+        existingImages.forEach((img, index) => {
+            img.addEventListener('click', function() {
+                openLightbox(index);
+            });
+            
+            img.addEventListener('error', function() {
+                this.style.display = 'none';
+            });
         });
-    });
+    }
 }
 
+// 當前燈箱圖片索引
+let currentLightboxIndex = 0;
+
 // 燈箱功能
-function openLightbox(src, alt) {
+function openLightbox(index) {
+    if (galleryImages.length === 0) return;
+    
+    currentLightboxIndex = index;
+    const imageInfo = galleryImages[currentLightboxIndex];
+    
     const lightbox = document.createElement('div');
     lightbox.className = 'lightbox';
     lightbox.innerHTML = `
         <div class="lightbox-content">
-            <img src="${src}" alt="${alt}">
+            <img src="${imageInfo.src}" alt="${imageInfo.alt}" id="lightbox-image">
             <button class="lightbox-close" onclick="closeLightbox()">&times;</button>
+            ${galleryImages.length > 1 ? `
+                <button class="lightbox-prev" onclick="previousImage()">❮</button>
+                <button class="lightbox-next" onclick="nextImage()">❯</button>
+                <div class="lightbox-counter">${currentLightboxIndex + 1} / ${galleryImages.length}</div>
+            ` : ''}
         </div>
     `;
     
     document.body.appendChild(lightbox);
+    
+    // 添加樣式
+    addLightboxStyles();
     
     // 點擊背景關閉
     lightbox.addEventListener('click', function(e) {
@@ -263,20 +332,252 @@ function openLightbox(src, alt) {
         lightbox.style.opacity = '1';
     }, 100);
     
-    // ESC 鍵關閉
-    const escHandler = function(e) {
-        if (e.key === 'Escape') {
-            closeLightbox();
-            document.removeEventListener('keydown', escHandler);
+    // 鍵盤事件
+    const keyHandler = function(e) {
+        switch(e.key) {
+            case 'Escape':
+                closeLightbox();
+                break;
+            case 'ArrowLeft':
+                e.preventDefault();
+                previousImage();
+                break;
+            case 'ArrowRight':
+                e.preventDefault();
+                nextImage();
+                break;
         }
     };
-    document.addEventListener('keydown', escHandler);
+    document.addEventListener('keydown', keyHandler);
+    
+    // 觸摸滑動支持
+    let touchStartX = 0;
+    const touchStartHandler = (e) => {
+        touchStartX = e.touches[0].clientX;
+    };
+    
+    const touchEndHandler = (e) => {
+        if (!touchStartX) return;
+        
+        const touchEndX = e.changedTouches[0].clientX;
+        const deltaX = touchStartX - touchEndX;
+        
+        if (Math.abs(deltaX) > 50) {  // 最小滑動距離
+            if (deltaX > 0) {
+                nextImage();  // 向左滑顯示下一張
+            } else {
+                previousImage();  // 向右滑顯示上一張
+            }
+        }
+        touchStartX = 0;
+    };
+    
+    lightbox.addEventListener('touchstart', touchStartHandler);
+    lightbox.addEventListener('touchend', touchEndHandler);
+    
+    // 存儲事件處理器以便清理
+    lightbox._keyHandler = keyHandler;
+    lightbox._touchStartHandler = touchStartHandler;
+    lightbox._touchEndHandler = touchEndHandler;
+}
+
+// 上一張圖片
+function previousImage() {
+    if (galleryImages.length <= 1) return;
+    
+    currentLightboxIndex = (currentLightboxIndex - 1 + galleryImages.length) % galleryImages.length;
+    updateLightboxImage();
+}
+
+// 下一張圖片
+function nextImage() {
+    if (galleryImages.length <= 1) return;
+    
+    currentLightboxIndex = (currentLightboxIndex + 1) % galleryImages.length;
+    updateLightboxImage();
+}
+
+// 更新燈箱圖片
+function updateLightboxImage() {
+    const lightboxImage = document.getElementById('lightbox-image');
+    const lightboxCounter = document.querySelector('.lightbox-counter');
+    
+    if (lightboxImage && galleryImages[currentLightboxIndex]) {
+        const imageInfo = galleryImages[currentLightboxIndex];
+        lightboxImage.style.opacity = '0';
+        
+        setTimeout(() => {
+            lightboxImage.src = imageInfo.src;
+            lightboxImage.alt = imageInfo.alt;
+            lightboxImage.style.opacity = '1';
+            
+            if (lightboxCounter) {
+                lightboxCounter.textContent = `${currentLightboxIndex + 1} / ${galleryImages.length}`;
+            }
+        }, 150);
+    }
+}
+
+// 添加燈箱樣式
+function addLightboxStyles() {
+    if (document.getElementById('lightbox-styles')) return;
+    
+    const style = document.createElement('style');
+    style.id = 'lightbox-styles';
+    style.textContent = `
+        .lightbox {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        .lightbox-content {
+            position: relative;
+            max-width: 90%;
+            max-height: 90%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .lightbox-content img {
+            width: 60vw;
+            max-height: 80vh;
+            object-fit: contain;
+            border-radius: 8px;
+            transition: opacity 0.15s ease;
+        }
+        
+        .lightbox-close {
+            position: absolute;
+            top: -40px;
+            right: -40px;
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            font-size: 30px;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+        
+        .lightbox-close:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: scale(1.1);
+        }
+        
+        .lightbox-prev, .lightbox-next {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            font-size: 24px;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+        
+        .lightbox-prev {
+            left: -70px;
+        }
+        
+        .lightbox-next {
+            right: -70px;
+        }
+        
+        .lightbox-prev:hover, .lightbox-next:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-50%) scale(1.1);
+        }
+        
+        .lightbox-counter {
+            position: absolute;
+            bottom: -40px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: white;
+            background: rgba(0, 0, 0, 0.5);
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            backdrop-filter: blur(10px);
+        }
+        
+        @media (max-width: 768px) {
+            .lightbox-content img {
+                width: 80vw;
+                max-height: 70vh;
+            }
+            
+            .lightbox-close {
+                top: 20px;
+                right: 20px;
+                font-size: 24px;
+                width: 35px;
+                height: 35px;
+            }
+            
+            .lightbox-prev, .lightbox-next {
+                width: 45px;
+                height: 45px;
+                font-size: 20px;
+            }
+            
+            .lightbox-prev {
+                left: 20px;
+            }
+            
+            .lightbox-next {
+                right: 20px;
+            }
+            
+            .lightbox-counter {
+                bottom: 20px;
+            }
+        }
+    `;
+    
+    document.head.appendChild(style);
 }
 
 // 關閉燈箱
 function closeLightbox() {
     const lightbox = document.querySelector('.lightbox');
     if (lightbox) {
+        // 清理事件監聽器
+        if (lightbox._keyHandler) {
+            document.removeEventListener('keydown', lightbox._keyHandler);
+        }
+        if (lightbox._touchStartHandler) {
+            lightbox.removeEventListener('touchstart', lightbox._touchStartHandler);
+        }
+        if (lightbox._touchEndHandler) {
+            lightbox.removeEventListener('touchend', lightbox._touchEndHandler);
+        }
+        
         lightbox.style.opacity = '0';
         setTimeout(() => {
             lightbox.remove();
@@ -285,22 +586,28 @@ function closeLightbox() {
 }
 
 // 滑動手勢支持（移動設備）
-let touchStartX = 0;
-let touchStartY = 0;
+let globalTouchStartX = 0;
+let globalTouchStartY = 0;
 
 document.addEventListener('touchstart', function(e) {
-    touchStartX = e.touches[0].clientX;
-    touchStartY = e.touches[0].clientY;
+    // 如果燈箱打開，不處理全局滑動
+    if (document.querySelector('.lightbox')) return;
+    
+    globalTouchStartX = e.touches[0].clientX;
+    globalTouchStartY = e.touches[0].clientY;
 });
 
 document.addEventListener('touchend', function(e) {
-    if (!touchStartX || !touchStartY) return;
+    // 如果燈箱打開，不處理全局滑動
+    if (document.querySelector('.lightbox')) return;
+    
+    if (!globalTouchStartX || !globalTouchStartY) return;
     
     const touchEndX = e.changedTouches[0].clientX;
     const touchEndY = e.changedTouches[0].clientY;
     
-    const deltaX = touchStartX - touchEndX;
-    const deltaY = touchStartY - touchEndY;
+    const deltaX = globalTouchStartX - touchEndX;
+    const deltaY = globalTouchStartY - touchEndY;
     
     // 檢查是否為有效滑動（最小距離 50px）
     if (Math.abs(deltaX) > 50 || Math.abs(deltaY) > 50) {
@@ -316,8 +623,8 @@ document.addEventListener('touchend', function(e) {
         }
     }
     
-    touchStartX = 0;
-    touchStartY = 0;
+    globalTouchStartX = 0;
+    globalTouchStartY = 0;
 });
 
 // 平滑滾動到指定元素
